@@ -51,6 +51,14 @@ describe('SCIM PATCH', () => {
             return done();
         });
 
+        it('REPLACE: with capital first letter for operation', done => {
+            const expected = false;
+            const patch: ScimPatchAddReplaceOperation = {op: 'Replace', value: {active: expected}};
+            const afterPatch: ScimUser = <ScimUser>scimPatch(scimUser, [patch]);
+            expect(afterPatch.active).to.be.eq(expected);
+            return done();
+        });
+
         it('REPLACE: 2 level property with path', done => {
             const expected = 'toto';
             const patch: ScimPatchAddReplaceOperation = {op: 'replace', value: expected, path: 'name.familyName'};
@@ -166,6 +174,14 @@ describe('SCIM PATCH', () => {
         it('ADD: first level property without path', done => {
             const expected = 'newValue';
             const patch: ScimPatchAddReplaceOperation = {op: 'add', value: {newProperty: expected}};
+            const afterPatch: ScimUser = <ScimUser>scimPatch(scimUser, [patch]);
+            expect(afterPatch.newProperty).to.be.eq(expected);
+            return done();
+        });
+
+        it('ADD: with capital first letter for operation', done => {
+            const expected = 'newValue';
+            const patch: ScimPatchAddReplaceOperation = {op: 'Add', value: {newProperty: expected}};
             const afterPatch: ScimUser = <ScimUser>scimPatch(scimUser, [patch]);
             expect(afterPatch.newProperty).to.be.eq(expected);
             return done();
@@ -335,6 +351,13 @@ describe('SCIM PATCH', () => {
             } catch(error) {
                 expect(error).to.exist;
             }
+            return done();
+        });
+
+        it('REMOVE: with capital first letter for operation', done => {
+            const patch: ScimPatchRemoveOperation = {op: 'Remove', path: 'active'};
+            const afterPatch: ScimUser = <ScimUser>scimPatch(scimUser, [patch]);
+            expect(afterPatch.active).not.to.exist;
             return done();
         });
 

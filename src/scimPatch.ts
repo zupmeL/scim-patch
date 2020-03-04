@@ -55,7 +55,7 @@ const IS_ARRAY_SEARCH = /(\[|\])/;
 // Regex to extract key and search request (ex: emails[primary eq true).
 const ARRAY_SEARCH: RegExp = /^(.+)\[(.+)\]$/;
 
-const AUTHORIZED_OPERATION = ['remove', 'add', 'replace'] as const;
+const AUTHORIZED_OPERATION = ['Remove', 'remove', 'Add', 'add', 'Replace', 'replace'] as const;
 
 export const PATCH_OPERATION_SCHEMA = 'urn:ietf:params:scim:api:messages:2.0:PatchOp';
 /*
@@ -85,10 +85,13 @@ export function patchBodyValidation(body: ScimPatch): void {
 export function scimPatch(scimResource: ScimResource, patchOperations: Array<ScimPatchOperation>): ScimResource {
     return patchOperations.reduce((patchedResource, patch) => {
         switch (patch.op) {
+            case 'Remove':
             case 'remove':
                 return applyRemoveOperation(patchedResource, patch);
+            case 'Add':
             case 'add':
                 return applyAddOperation(patchedResource, patch);
+            case 'Replace':
             case 'replace':
                 return applyReplaceOperation(patchedResource, patch);
             default:
@@ -108,10 +111,10 @@ function validatePatchOperation(operation: ScimPatchOperation): void {
     if (!operation.op || Array.isArray(operation.op) || !AUTHORIZED_OPERATION.includes(operation.op))
         throw new InvalidScimPatchRequest(`Invalid op "${operation.op}" in the request.`);
 
-    if (operation.op === 'remove' && !operation.path)
+    if ( (operation.op === 'Remove' || operation.op === 'remove' ) && !operation.path)
         throw new NoPathInScimPatchOp();
 
-    if (operation.op === 'add' && !('value' in operation))
+    if ( (operation.op === 'Add' || operation.op === 'add' ) && !('value' in operation))
         throw new InvalidScimPatchRequest(`The operation ${operation.op} MUST contain a "value" member whose content specifies the value to be added`);
 
     if (operation.path && typeof operation.path !== 'string')

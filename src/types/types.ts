@@ -13,12 +13,12 @@ export interface ScimResource {
 
 // Object to represent PATCH inputs (RFC-7644)
 export interface ScimPatchRemoveOperation {
-  readonly op: 'remove';
+  readonly op: 'Remove' | 'remove';
   readonly path: string;
 }
 
 export interface ScimPatchAddReplaceOperation {
-  readonly op: 'add' | 'replace';
+  readonly op: 'Add' | 'add' | 'Replace' | 'replace';
   readonly path?: string;
   readonly value?: any;
 }
